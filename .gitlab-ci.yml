@@ -28,3 +28,10 @@ upload_to_github:
 
     - hub release edit -m "" -a dist/payload1 ${TAG}
     - hub release edit -m "" -a dist/payload2 ${TAG}
+
+test_nothing:
+  stage: public_deploy
+  tags: [ "amd64", "build" ]
+  image: antmak/github-hub:2
+  script:
+    - echo Do nothing
