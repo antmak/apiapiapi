@@ -1,0 +1,30 @@
+stages:
+  - public_deploy
+
+upload_to_github:
+  stage: public_deploy
+  when: manual
+  allow_failure: true
+  only:
+    - tags
+  #tags: [ "amd64", "internet" ]
+  tags: [ "amd64", "build" ]
+  image: antmak/github-hub:2
+  variables:
+    GIT_STRATEGY: fetch
+    GITHUB_TOKEN: "${GH_TOKEN_ANTMAK}"
+    GITHUB_REPO: "${GH_REPO_HTTPS}"
+    TAG: "${CI_COMMIT_TAG}"
+  before_script: []
+  script:
+    - ls -l dist*/
+
+    - git remote add github ${GH_REPO_HTTPS}
+
+#    - hub release show ${TAG} || { echo "Creating a release with ${TAG}"; hub release create -m "${TAG}" ${TAG} ; }
+# - printf "\tCannot access to GitHub remote:\n\n$(hub remote -v) \n\n"
+
+    - hub release show ${TAG} || { echo "Please create a release on GitHub with ${TAG} tag at first"; exit 1; }
+
+    - hub release edit -m "" -a dist/payload1 ${TAG}
+    - hub release edit -m "" -a dist/payload2 ${TAG}
